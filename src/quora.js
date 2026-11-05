@@ -224,7 +224,7 @@
   // Crown City's skyline blockout, with walkable streets preserved between towers.
   for(let gx=-1;gx<=1;gx++)for(let gz=-1;gz<=1;gz++){
     if(gx===0&&gz===0)continue;
-    const x=gx*13,z=gz*13,h=12+rand()*18,w=6+rand()*2;
+    const x=gx*17,z=gz*17,h=12+rand()*18,w=6+rand()*2;
     addBox(w,h,w,x,h/2,z,matWall,true);
     for(let f=1;f<Math.floor(h/3);f++)addBox(w*.82,.55,.18,x,h-f*3,z+w/2+.11,matWin,false);
     addBox(w*.72,.35,w*.72,x,h+.18,z,matTrim,false);
