@@ -1,0 +1,114 @@
+﻿# Quora: 100 implemented game systems
+
+This checklist is generated from the live feature registry in `src/quora.js`. Every item below has an implementation hook in the current playable vertical slice. A checked item means code exists; it does not claim AAA production depth, online matchmaking, or authored cinematic content. The desktop build and runtime smoke checks are tracked separately in the README.
+
+## System checklist
+
+- [x] 001. `aces-tonemap`
+- [x] 002. `shadow-map`
+- [x] 003. `exp-fog`
+- [x] 004. `fps-camera`
+- [x] 005. `pip-minimap`
+- [x] 006. `profile-save`
+- [x] 007. `pointer-look`
+- [x] 008. `aabb-collision`
+- [x] 009. `seeded-rng`
+- [x] 010. `procedural-city`
+- [x] 011. `emissive-windows`
+- [x] 012. `crouch-beam`
+- [x] 013. `street-lights`
+- [x] 014. `logo-card`
+- [x] 015. `zone-ring`
+- [x] 016. `shotgun-pellets`
+- [x] 017. `procedural-gun`
+- [x] 018. `muzzle-light`
+- [x] 019. `weapon-bob`
+- [x] 020. `elite-bot`
+- [x] 021. `crawler-bot`
+- [x] 022. `spawn-ring`
+- [x] 023. `ammo-pickup`
+- [x] 024. `armor-pickup`
+- [x] 025. `tracers`
+- [x] 026. `impact-sparks`
+- [x] 027. `decals`
+- [x] 028. `debris`
+- [x] 029. `shell-eject`
+- [x] 030. `camera-shake`
+- [x] 031. `ads-fov`
+- [x] 032. `sprint-fov`
+- [x] 033. `landing-dip`
+- [x] 034. `camera-relative-move`
+- [x] 035. `step-up`
+- [x] 036. `invert-pitch`
+- [x] 037. `crouch`
+- [x] 038. `sprint`
+- [x] 039. `stamina`
+- [x] 040. `ads-move-slow`
+- [x] 041. `slide`
+- [x] 042. `jump`
+- [x] 043. `gravity`
+- [x] 044. `ground-snap`
+- [x] 045. `recoil-recovery`
+- [x] 046. `regen-delay`
+- [x] 047. `health-pool`
+- [x] 048. `sfx-steps`
+- [x] 049. `weapon-switch`
+- [x] 050. `viewmodel-swap`
+- [x] 051. `reload`
+- [x] 052. `damage-falloff`
+- [x] 053. `armor-plates`
+- [x] 054. `hit-direction`
+- [x] 055. `death-state`
+- [x] 056. `explosion-damage`
+- [x] 057. `headshot`
+- [x] 058. `hitmarker`
+- [x] 059. `score`
+- [x] 060. `kill-confirm`
+- [x] 061. `streak-meter`
+- [x] 062. `bot-topple`
+- [x] 063. `best-wave`
+- [x] 064. `hitscan`
+- [x] 065. `dry-fire`
+- [x] 066. `ammo-reserve`
+- [x] 067. `recoil-pattern`
+- [x] 068. `sfx-gun`
+- [x] 069. `melee`
+- [x] 070. `grenade-arc`
+- [x] 071. `grenade-fuse`
+- [x] 072. `shield-deploy`
+- [x] 073. `shield-blocks`
+- [x] 074. `reload-bar`
+- [x] 075. `bot-los`
+- [x] 076. `bot-separation`
+- [x] 077. `bot-flank`
+- [x] 078. `bot-chase`
+- [x] 079. `bot-melee`
+- [x] 080. `bot-fire`
+- [x] 081. `intermission`
+- [x] 082. `wave-scale`
+- [x] 083. `objective-line`
+- [x] 084. `shrink-zone`
+- [x] 085. `zone-damage`
+- [x] 086. `streak-uav`
+- [x] 087. `streak-airstrike`
+- [x] 088. `streak-mortar`
+- [x] 089. `killfeed`
+- [x] 090. `sfx-ui`
+- [x] 091. `intro-sting`
+- [x] 092. `ambient-drone`
+- [x] 093. `quality-toggle`
+- [x] 094. `pause`
+- [x] 095. `websocket-client`
+- [x] 096. `net-hud`
+- [x] 097. `compass`
+- [x] 098. `low-health-vignette`
+- [x] 099. `damage-flash`
+- [x] 100. `dynamic-crosshair`
+
+## Remaining production work
+
+- Author original high-resolution character, weapon, environment and animation assets; current world and weapon models are procedurally generated.
+- Replace the prototype bot behaviors with navigation meshes, cover planning and performance profiling.
+- Implement server-authoritative multiplayer, identity, matchmaking and abuse controls before calling networking production-ready.
+- Add platform-specific installers, code signing, crash reporting, accessibility review and real-hardware QA.
+- Maintain the list as executable code is modularized; do not inflate file count by splitting unrelated one-line stubs.

@@ -1,56 +1,58 @@
 # Quora
 
-A cinematic multiplayer FPS built for the laptop — no install, no build step, runs on any modern browser via WebGL. Hosted on GitHub (static site → GitHub Pages).
+Quora is an original, laptop-focused 3D first-person shooter prototype built with Three.js and Electron. The world, weapons, bots, and combat effects are generated in code. The current build is a playable vertical slice, not a finished AAA-scale game or a production multiplayer service.
 
 ## Play
 
-Open `index.html` locally, or serve the repo root and open in browser.
-
-- Repo: `github.com/alitiora-initiative/quora`
-- Play URL after enabling Pages: `https://alitiora-initiative.github.io/quora/`
+- **Windows desktop:** run `npm install`, then `npm start`.
+- **Browser:** serve this folder over HTTP and open `index.html` in a WebGL-capable browser. A local server avoids browser restrictions on local storage and audio.
+- **Self-test:** `npm run selftest` starts a hidden Electron window, boots the renderer, exercises movement and hitscan, and records `test-output/result.json` plus a frame capture.
+- **Package the Windows app:** `npm run package:windows`. This creates a portable runtime folder at `dist/Quora/`; launch `dist/Quora/electron.exe`.
 
 ## Controls
 
 | Input | Action |
 |---|---|
-| W A S D / Arrows | Move |
+| W A S D | Move |
 | Mouse | Look |
-| Left Mouse | Fire |
-| Right Mouse | Aim / ADS |
-| R | Reload |
-| C | Crouch |
+| Left mouse | Fire |
+| Right mouse | Aim down sights |
 | Shift | Sprint |
+| C | Crouch |
+| Ctrl | Slide |
 | Space | Jump |
-| Q | Deploy Gloo Shield |
-| F | Use Killstreak |
+| R | Reload |
+| 1–5 | Select weapon |
+| V | Melee |
+| G | Throw grenade |
+| Q | Deploy energy shield |
+| Esc | Pause |
+| F4 | Toggle graphics quality |
 
-## Features
+## Implemented prototype systems
 
-- **Hitscan rifle**: recoil kick + recovery, spread (hip/ADS), damage falloff, tracer rounds, muzzle flash, impact FX, explosions
-- **Procedural gun model**: low-poly assault rifle built from geometric shapes, smooth Aim Down Sights (ADS) transitions with lerp, weapon bobbing during locomotion
-- **Procedural CGI terrain**: infinite landscape generated via Fractional Brownian Motion (fBm) and Perlin noise in vertex shaders, zero asset footprint
-- **Custom GLSL VFX shaders**: neon emissive shields, animated energy scanlines, screen-space glow, procedural explosions
-- **Player movement**: sprint, crouch, jump, gravity, acceleration/friction, camera shake on fire
-- **Health**: regen delay + regen rate, damage vignette, low-health pulse, screen shake
-- **Wave-based combat**: scaling enemy counts/health/speed, AI enemies with roam/engage/investigate behavior
-- **Gloo Shield deployment**: Q key deploys instant defensive energy barrier (from Free Fire style)
-- **Killstreaks**: UAV radar sweep, Precision strike, Mortar fire
-- **HUD**: dynamic crosshair spread, hitmarker, health bar + number, ammo/reserve + reload bar, radar, score, wave counter, objective text
-- **WebSocket multiplayer**: real-time position and action synchronization up to 16 players, smooth interpolation rendering
-- **Procedural particle effects**: muzzle flashes, impact sparks, explosion blooms all driven on GPU
+The engine feature registry reports 103 unique code hooks. A 100-item audit checklist is in [docs/100-systems.md](docs/100-systems.md). Highlights include a procedural 3D city, first-person camera and collision, original procedural weapons, five weapon types, ADS and recoil, reload/ammo, grenade and shield abilities, bot combat, waves, health/armor, pickups, shrinking zone, streak rewards, particle and impact effects, synthesized audio, HUD, local profile settings, and an optional WebSocket client. Local multiplayer server support is not verified and should be treated as unavailable in this build.
 
-## Tech
+## Graphics and device expectations
 
-- Three.js r160 (WebGL), vanilla JavaScript, Canvas textures, no build step
-- Effects: additive sprites, ring decals, line tracers, point lights
-- Multi-language: JavaScript (game engine), GLSL (shaders), Java (game server backend)
-- Architecture: client-side Three.js + WebSocket networking + procedural generation
+This prototype uses live 3D geometry, shadows, fog, emissive materials, tone mapping, tracers and particles. The image-based HUD/menu is normal FPS interface UI. Graphics quality can be toggled with F4. Performance depends on the laptop GPU and driver; the self-test checks a rendered WebGL frame but does not replace testing on different hardware.
 
-## Repository Layout
+The source and bundled logo assets are far smaller than 1 GB. A gigabyte-scale download would require licensed or original production assets (high-detail models, PBR textures, motion capture, voice, music and cinematic sequences); padding the project with unrelated files would not improve the game. The supplied Quora logos are used for the in-game menu and packaged app icon.
 
-- `index.html` — shell + HUD
-- `style.css` — HUD styling
-- `game.js` — game logic (engine, VFX, player, gun, weapon, network)
-- `docs/research.md` — deep research notes (CoD mechanics, VFX/CGI, networking)
-- `src-java/QuoraGameServer.java` — Core Network Socket Routing Engine (Java)
-- `package.json` — Configures the desktop app builder
+## Project layout
+
+- `index.html`, `style.css` — game canvas, menu and HUD
+- `src/quora.js` — playable Three.js engine and game systems
+- `three.min.js` — pinned local Three.js runtime
+- `assets/` — supplied Quora marks and Windows icon
+- `electron-main.js`, `forge.config.js` — hardened desktop shell and packaging
+- `docs/100-systems.md` — implementation audit
+- `docs/research.md` — design references, rendering guidance and production limits
+
+## Security and online play
+
+The Electron renderer enables context isolation and sandboxing and disables Node integration. The client may try `ws://127.0.0.1:8080`; it displays SOLO until a server connects. The existing Java source has not been built or protocol-validated, so this is not advertised as a working online game.
+
+## License
+
+Quora's original code is provided under the repository's license. Three.js and the supplied logos retain their respective upstream/creator terms; check those before redistributing the bundled assets.

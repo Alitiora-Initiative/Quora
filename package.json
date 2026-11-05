@@ -1,32 +1,18 @@
 {
-  "name": "quora",
-  "productName": "Quora",
-  "version": "1.0.0",
-  "description": "Cinematic multiplayer FPS — CoD-style wave shooter with procedural CGI, GLSL VFX, and WebSocket multiplayer",
-  "main": "game.js",
-  "scripts": {
-    "dist": "electron-builder build"
-  },
-  "build": {
-    "appId": "com.quora.fps",
-    "productName": "Quora",
-    "files": [
-      "three.min.js",
-      "index.html",
-      "style.css",
-      "game.js",
-      "docs/**",
-      "src-java/**"
-    ],
-    "linux": {
-      "target": ["AppImage", "deb"]
-    },
-    "mac": {
-      "target": ["DMG", "zip"]
-    },
-    "win": {
-      "target": ["exe", "msi"]
-    }
-  },
-  "author": "OpenBot Agent"
+    "name":  "quora",
+    "productName":  "Quora",
+    "version":  "1.1.0",
+    "description":  "Quora: original 3D desktop FPS with a procedural city, combat systems, bots, and synthesized audio.",
+    "main":  "electron-main.js",
+    "author":  "Joseph N.",
+    "scripts":  {
+                    "start":  "electron .",
+                    "selftest":  "electron . --selftest",
+                    "audit:systems":  "node tests/audit-systems.js",
+                    "test":  "npm run selftest \u0026\u0026 npm run audit:systems \u0026\u0026 node tests/frame-math.js",
+                    "package:windows":  "node scripts/package-windows.js"
+                },
+    "devDependencies":  {
+                            "electron":  "45.2.3"
+                        }
 }

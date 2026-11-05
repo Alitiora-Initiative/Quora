@@ -3,6 +3,50 @@
 // Game name: Quora
 
 // ============================================================
+// AUDIO MANAGER
+// ============================================================
+class AudioManager {
+    constructor() {
+        this.context = new (window.AudioContext || window.webkitAudioContext)();
+        this.sounds = {};
+        this.isInitialized = false;
+    }
+
+    load(url, name) {
+        fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(buffer => this.context.decodeAudioData(buffer))
+            .then(audioData => {
+                this.sounds[name] = audioData;
+                console.log(`[QUORA AUDIO] Loaded: ${name}`);
+            })
+            .catch(err => console.warn(`[QUORA AUDIO] Failed to load ${name}:`, err));
+    }
+
+    play(name, loop = false) {
+        if (!this.sounds[name]) {
+            console.warn(`[QUORA AUDIO] Sound not loaded: ${name}`);
+            return;
+        }
+        const bufferSource = this.context.createBufferSource();
+        bufferSource.buffer = this.sounds[name];
+        bufferSource.loop = loop;
+        bufferSource.connect(this.context.destination);
+        bufferStart[0] = bufferSource.start(0);
+    }
+
+    playSfx(url, loop = false) {
+        // Fallback to HTML5 Audio for short effects
+        const audio = new Audio(url);
+        audio.loop = loop;
+        audio.play().catch(err => console.warn('[QUORA AUDIO] HTML5 play failed:', err));
+    }
+}
+
+// Global audio instance
+window.quoraAudio = new AudioManager();
+
+// ============================================================
 // CORE ENGINE SETUP (from quora_core.js)
 // ============================================================
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -527,6 +571,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const network = new NetworkManager(engine);
     engine.updatables.push(network);
 
-    // 5. Run the engine
-    engine.start();
+    // 5. Logo intro — text-based, no image files (local PNGs not accessible in browser)
+    const logoText = document.createElement('div');
+    logoText.id = 'logo-intro';
+    logoText.style = `
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(5,7,13,0.95); z-index: 9999; color: #e8f2ff; font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 120px; letter-spacing: 8px; pointer-events: none; transition: opacity 2s ease;
+    `;
+    logoText.textContent = 'QUORA';
+    document.body.appendChild(logoText);
+
+    // Fade out after 3 seconds, then start game on user interaction
+    setTimeout(() => {
+        logoText.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(logoText);
+            // Start engine after user pointerlock interaction
+            const startGame = () => {
+                engine.start();
+                document.body.removeEventListener('click', startGame);
+            };
+            document.body.addEventListener('click', startGame);
+            // Also start on first keypress
+            const startOnKey = () => {
+                engine.start();
+                window.removeEventListener('keydown', startOnKey);
+            };
+            window.addEventListener('keydown', startOnKey);
+        }, 1000);
+    }, 3000);
+
+// 6. Run the engine
+    setTimeout(() => {
+        engine.start();
+    }, 3500);
 });
