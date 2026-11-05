@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Steel Haven — CoD-style FPS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="hud">
+      <div id="crosshair">
+        <div id="crosshair-dot"></div>
+        <div id="crosshair-ring"></div>
+      </div>
+
+      <div id="hitmarker" class="hidden">
+        <div id="hitmark-t"></div>
+        <div id="hitmark-b"></div>
+      </div>
+
+      <div id="low-health"></div>
+      <div id="damage-overlay"></div>
+
+      <div id="top-left">
+        <div id="wave-counter">WAVE 1</div>
+        <div id="objective">ELIMINATE ALL HOSTILES</div>
+      </div>
+
+      <div id="top-right">
+        <div id="score">SCORE 0</div>
+        <div id="killstreak">KILLSTREAK: NONE</div>
+      </div>
+
+      <div id="health-wrap">
+        <div id="health-bar"><div id="health-fill"></div></div>
+        <div id="health-text">100</div>
+      </div>
+
+      <div id="ammo-wrap">
+        <div id="ammo-text">30 / 90</div>
+        <div id="reload-bar"><div id="reload-fill"></div></div>
+      </div>
+
+      <div id="radar"></div>
+
+      <div id="menu-overlay">
+        <div id="menu-box">
+          <h1 id="menu-title">STEEL HAVEN</h1>
+          <div id="menu-sub">A CODY-STYLE WAVE SHOOTER</div>
+          <div id="menu-controls">
+            <div><b>WASD</b> Move</div>
+            <div><b>MOUSE</b> Look</div>
+            <div><b>LMB</b> Fire</div>
+            <div><b>RMB</b> Aim / ADS</div>
+            <div><b>R</b> Reload</div>
+            <div><b>C</b> Crouch</div>
+            <div><b>SHIFT</b> Sprint</div>
+          </div>
+          <button id="deploy-btn">CLICK TO DEPLOY</button>
+          <div id="menu-note">Browser FPS &mdash; WebGL &mdash; GitHub hosted</div>
+        </div>
+      </div>
+
+      <div id="pause-overlay">
+        <div id="pause-box">
+          <h2>PAUSED</h2>
+          <button id="resume-btn">RESUME</button>
+          <button id="restart-btn">RESTART MISSION</button>
+        </div>
+      </div>
+
+      <div id="death-overlay">
+        <div id="death-box">
+          <h2>KIA</h2>
+          <div id="death-stats"></div>
+          <button id="redeploy-btn">REDEPLOY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
