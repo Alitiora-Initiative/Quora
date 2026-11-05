@@ -1,0 +1,133 @@
+QUORA — MASTER GAME-BUILD PROMPT
+
+ROLE
+Act as a senior PC game director, Unity gameplay engineer, technical artist, level designer, UI/UX designer, and multiplayer architect. Build an ORIGINAL PC third-person battle-royale shooter called QUORA. It may take broad genre inspiration from the readability, pacing, squad combat, customization, and cinematic military atmosphere of popular shooters, but it must not copy any copyrighted maps, characters, logos, interface layouts, audio, weapon skins, assets, names, or proprietary mechanics. QUORA must have its own art direction and identity: charcoal/black foundations, metallic silver, electric violet, restrained cyan accents, and the QUORA crown/Q symbol.
+
+PRIMARY GOAL
+Build QUORA from a clean project to a genuinely playable PC prototype, including a polished interactive 3D main lobby and one coherent explorable island map. Do not pretend that a complete commercial 50–100-player live-service game can be produced in one pass. Work in tested milestones. Prioritise a stable, fun vertical slice before large-scale online features.
+
+TECHNICAL BASELINE
+- Engine: Unity 6 LTS, using URP for scalable laptop performance.
+- Language: C#.
+- Platform: Windows PC first; keyboard and mouse as the primary control scheme.
+- Input: Unity Input System.
+- Camera: Cinemachine or the current supported Unity camera package.
+- UI: UI Toolkit or uGUI with TextMeshPro; choose one coherent approach and use it consistently.
+- 3D blockout and custom assets: Blender, with original assets or properly licensed assets only.
+- AI opponents for the first playable version: NavMesh-based bots with clear, testable behaviour.
+- Source control: Git, with a clear .gitignore and meaningful commits.
+- Multiplayer: do not bolt on networking before the offline gameplay loop works. When ready, evaluate a server-authoritative dedicated-server architecture and an appropriate Unity networking solution. Keep damage, inventory, movement validation, match state, and rewards authoritative on the server. Do not trust clients with competitive outcomes.
+- Backend/accounts: use local mock profiles first. Add a secure backend only in a later milestone. Never hard-code secrets, API keys, or passwords.
+- Keep packages version-compatible with the installed Unity editor and record package versions in the project.
+
+PERFORMANCE TARGET
+Make the first build usable on ordinary laptops. Provide Low / Medium / High graphics presets, adjustable render scale, sensible shadow and post-processing defaults, object pooling, LODs, occlusion culling where appropriate, baked lighting for static scenes, and configurable draw distance. Avoid expensive real-time effects by default. Do not assume a dedicated gaming GPU. Measure performance and report actual frame rate rather than claiming a target has been met without testing.
+
+WORLD CONCEPT: QUORA ISLAND
+Create one coherent fictional island called QUORA ISLAND. The island should be readable from an overhead map and consistent from every camera direction. Use a clear coordinate plan, roads, paths, shorelines, elevation, landmarks, and traversal links. Begin with a compact greybox map around 1.5 km × 1.5 km; keep the systems data-driven so the world can be expanded later. Do not start by making a huge empty map.
+
+Six primary points of interest:
+1. CROWN CITY — dense urban district with apartments, rooftops, alleys, a plaza, and several vertical routes.
+2. NEON PORT — docks, shipping containers, cranes, warehouses, water approaches, and long sightlines.
+3. BLACKOUT BASE — a secured military/research facility with hangars, perimeter walls, radar structures, and interior rooms.
+4. GHOST VALLEY — forested hills, a small settlement, trails, rocks, and concealed routes.
+5. SKYFALL AIRPORT — runway, terminal, hangars, service roads, and open combat lanes.
+6. ROYAL DAM — a hydroelectric dam, water channel, control buildings, bridge crossings, and high-ground positions.
+
+Connect the POIs with a main road loop and secondary dirt roads. Add coastlines, two major bridge crossings, smaller footpaths, elevation changes, natural cover, and at least three risk/reward traversal routes. Establish a consistent north, east, south, and west orientation. Add a simple top-down map and compass. The six districts must share one geography, not look like six disconnected maps.
+
+360-DEGREE WORLD-COVERAGE REQUIREMENT
+After the blockout is built, create a camera-capture tool or documented capture checklist that renders the SAME world from these azimuths: N (0°), NE (45°), E (90°), SE (135°), S (180°), SW (225°), W (270°), NW (315°), plus a true top-down orthographic view. Use fixed camera height, lens/FOV, exposure, and reference landmarks so the views can be compared. Also capture ground-level views from the main route into each POI, one interior view per major building type, and one overview of the lobby. Do not substitute unrelated environment images for consistent angle coverage.
+
+MAIN LOBBY — REQUIRED AND IMPORTANT
+Create an attractive, fully interactive 3D lobby scene before building the full battle royale. It should look like a modern futuristic operations hangar / island command terminal with a panoramic view out toward QUORA ISLAND. Use black metal, brushed silver, violet lighting, controlled cyan highlights, animated but subtle holographic map elements, atmospheric lighting, and the QUORA Q/crown insignia. Keep the UI legible and uncluttered.
+
+Lobby layout:
+- Centre: full-body player character on a presentation platform. Allow mouse drag to rotate the character and a slow idle animation.
+- Upper-left: player avatar, display name, level, XP progress, and profile button. Use mock/local data until account services exist.
+- Upper-right: settings, friends/social, inbox/notifications, and currency counters. Clearly mark currencies as prototype mock values; do not implement real-money purchases.
+- Left navigation: PLAY, CHARACTER, ARMORY, INVENTORY, MISSIONS, EVENTS, and SETTINGS.
+- Right panel: selected mode, map preview, party size, and a large START button.
+- Bottom panel: friends/party slots and recent status, without covering the character.
+- Main CTA: START MATCH. It must open a mode/party panel and then launch the training or prototype match scene.
+- Every visible button must work, open a real screen, or be visibly disabled with a reason. No dead decorative controls.
+- Character selection screen: choose from a small set of original placeholder characters; preview outfit and equipped item.
+- Armory screen: display original placeholder weapon models, weapon stats, attachments, and a loadout save button. No real brand names or copied weapon skins.
+- Inventory screen: simple item grid with categories and tooltips.
+- Settings screen: graphics quality, resolution, fullscreen/windowed, master/music/SFX volume, mouse sensitivity, key bindings, and apply/reset actions. Persist settings locally.
+- Mode select: Training Range first, then a placeholder for Solo/Duo/Squad battle royale. Do not show modes as live until implemented.
+
+PLAYER AND COMBAT LOOP
+- Third-person controller: walk, sprint, crouch, jump, aim, and interact.
+- Camera: shoulder camera with adjustable sensitivity, collision handling, and aim zoom.
+- Controls: WASD move, mouse look, left click fire, right click aim, Shift sprint, Space jump, C crouch, R reload, F interact/pick up, number keys or scroll wheel switch weapons, Esc pause.
+- Weapons: begin with one original assault-rifle-style prototype and one sidearm. Implement fire rate, magazine, reserve ammo, reload duration, recoil, spread, hit detection, impact effects, and audio placeholders. Keep weapon stats in ScriptableObjects.
+- Health and combat: health, armour, damage feedback, respawn in training, hit markers, death state, and a simple match results panel.
+- Loot: ground pickups for weapon, ammo, armour, and med item; show clear interaction prompts.
+- Inventory: one primary slot, one secondary slot, armour slot, healing slot, ammo counts; keep it simple in the first milestone.
+- Bots: add a few practice targets first; later add bots that patrol, detect the player, take cover, and engage. Use readable debug states.
+- Training Range: a safe space with stationary and moving targets, ammo resupply, weapon testing, and a return-to-lobby button.
+
+BATTLE-ROYALE SYSTEMS — LATER MILESTONE
+Only after movement, camera, combat, loot, bots, and map traversal are stable:
+- aircraft/transport route and drop phase;
+- parachute or controlled glide system;
+- loot distribution and spawn points;
+- shrinking safe zone with visible stages and damage outside the zone;
+- solo/duo/squad team rules;
+- match timer, alive-player count, kill count, spectating, victory, and results;
+- server-authoritative match state and anti-cheat validation;
+- dedicated server deployment and matchmaking after basic network tests.
+Start with local simulation and a few bots. Prototype with 2–4 networked clients before attempting higher player counts. Treat 50 players as a later engineering target, not an initial promise. Benchmark bandwidth, server CPU, replication frequency, and latency before scaling.
+
+CODE ARCHITECTURE
+Use modular, well-named systems. Suggested structure:
+Assets/QUORA/Scenes (Boot, MainMenu, Lobby, TrainingRange, MatchPrototype, Results)
+Assets/QUORA/Scripts/Core
+Assets/QUORA/Scripts/Player
+Assets/QUORA/Scripts/Camera
+Assets/QUORA/Scripts/Combat
+Assets/QUORA/Scripts/Weapons
+Assets/QUORA/Scripts/Inventory
+Assets/QUORA/Scripts/AI
+Assets/QUORA/Scripts/World
+Assets/QUORA/Scripts/UI
+Assets/QUORA/Scripts/Audio
+Assets/QUORA/Scripts/Save
+Assets/QUORA/Scripts/Networking (later)
+Assets/QUORA/ScriptableObjects
+Assets/QUORA/Prefabs
+Assets/QUORA/Art/Materials
+Assets/QUORA/Art/Environment
+Assets/QUORA/Art/Characters
+Assets/QUORA/Art/UI
+Assets/QUORA/Audio
+
+Prefer composition over giant manager classes. Use interfaces/events where useful, serializable configuration, ScriptableObjects for tunable data, object pooling for frequent projectiles/effects, and clear scene ownership. Avoid one 2,000-line script. Avoid hidden dependencies and magic strings. Include defensive null checks and useful logs. Comment public APIs and non-obvious logic.
+
+VISUAL QUALITY
+Start with greybox geometry, scale references, traversal, lighting, and sightlines. Then replace blockout pieces with original modular assets. Maintain a consistent art bible: black/charcoal architecture, neutral concrete and weathered metal, restrained purple lighting, natural greens/blues for outdoor readability, clear team/player silhouettes, strong value contrast, and readable pickup colours. Purple is a brand accent, not a filter over the entire world. The gameplay scene must remain readable in daylight and at night. Use original signage and avoid garbled text in 3D assets; put important readable text in the UI.
+
+DEVELOPMENT PROCESS — DO NOT SKIP
+Milestone 0: inspect the machine and installed Unity version; create the project; confirm it opens and compiles.
+Milestone 1: create Boot, Lobby, and TrainingRange scenes; implement navigation and a polished static-to-interactive lobby.
+Milestone 2: implement third-person character movement, camera, animation placeholders, and input rebinding.
+Milestone 3: implement weapon firing, aiming, reload, hit detection, health, and training targets.
+Milestone 4: greybox QUORA ISLAND with the six connected POIs, main roads, landmarks, and a top-down map.
+Milestone 5: implement pickups, inventory, bots, and a complete training loop.
+Milestone 6: create a small offline battle-royale simulation with safe zone, match state, drop phase, and bots.
+Milestone 7: evaluate and implement authoritative multiplayer; start with 2–4 clients, then benchmark before scaling.
+Milestone 8: replace greybox assets, add audio/VFX, optimise, test, and prepare a build.
+
+DELIVERABLES AFTER EACH MILESTONE
+1. List the files/scenes created or changed.
+2. Provide complete code files, not fragments with missing functions.
+3. Give exact Unity editor setup steps and Inspector assignments.
+4. State what is implemented, what is mocked, and what remains unimplemented.
+5. Run compilation/tests where possible and report real errors honestly.
+6. Give a short manual test checklist with expected results.
+7. Keep a README with controls, requirements, setup, current status, and next milestone.
+8. Do not overwrite working files without explaining the change; keep changes small and reviewable.
+
+FIRST TASK — START NOW
+Inspect the repository/project folder. If empty, create the Unity project structure. Implement only Milestone 0 and Milestone 1 in this first pass: a boot scene, a polished QUORA 3D lobby scene, working navigation between lobby panels, mock player profile, character preview rotation, mode selection, settings persistence, and a START button that launches a basic TrainingRange scene. Use primitive/procedural placeholder assets if final 3D models are not available. Ensure the project compiles and runs before adding combat or multiplayer. Then report exactly how to open and test it.

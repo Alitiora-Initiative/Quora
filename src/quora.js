@@ -171,10 +171,41 @@
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
+  const waterMat = new T.MeshStandardMaterial({ color: 0x101c32, roughness: 0.28, metalness: 0.35, emissive: 0x07101c });
+  const water = new T.Mesh(new T.PlaneGeometry(560, 560), waterMat);
+  water.rotation.x = -Math.PI / 2; water.position.y = -0.45; scene.add(water);
+  const island = new T.Mesh(new T.CylinderGeometry(176, 188, 8, 64, 1), new T.MeshStandardMaterial({ color: 0x343044, roughness: 0.95 }));
+  island.position.y = -4; island.receiveShadow = true; scene.add(island);
+  const districtMat = new T.MeshStandardMaterial({ color: 0x282736, roughness: 0.95 });
+  const forestMat = new T.MeshStandardMaterial({ color: 0x243a32, roughness: 1 });
+  const roadMat = new T.MeshStandardMaterial({ color: 0x171923, roughness: 0.92 });
+  function road(x1,z1,x2,z2,width){ const dx=x2-x1,dz=z2-z1,len=Math.hypot(dx,dz),m=new T.Mesh(new T.PlaneGeometry(width,len),roadMat);m.rotation.x=-Math.PI/2;m.rotation.z=-Math.atan2(dx,dz);m.position.set((x1+x2)/2,0.025,(z1+z2)/2);scene.add(m); }
+  const pois=[
+    {name:'CROWN CITY',x:0,z:0,color:0xc46bff},
+    {name:'BLACKOUT BASE',x:-82,z:-62,color:0xa69bff},
+    {name:'NEON PORT',x:104,z:54,color:0x55d9ff},
+    {name:'GHOST VALLEY',x:-112,z:78,color:0x8bdb9b},
+    {name:'SKYFALL AIRPORT',x:80,z:-104,color:0xffd477},
+    {name:'ROYAL DAM',x:-30,z:112,color:0x72caff}
+  ];
+  // Islands' ring road and distinct, landmark-led combat districts.
+  for(let i=0;i<pois.length;i++){const a=pois[i],b=pois[(i+1)%pois.length];road(a.x,a.z,b.x,b.z,7);}
+  pois.forEach((p,i)=>{
+    const pad=new T.Mesh(new T.CylinderGeometry(i===0?43:30,i===0?46:32,0.5,32),districtMat);pad.position.set(p.x,0.12,p.z);scene.add(pad);
+    const pole=new T.Mesh(new T.CylinderGeometry(.18,.3,13,8),new T.MeshStandardMaterial({color:p.color,emissive:p.color,emissiveIntensity:.45}));pole.position.set(p.x,6.7,p.z);scene.add(pole);
+    const sign=new T.Mesh(new T.BoxGeometry(13,1.1,.3),new T.MeshStandardMaterial({color:p.color,emissive:p.color,emissiveIntensity:.5}));sign.position.set(p.x,10,p.z);scene.add(sign);
+    if(i===3){for(let n=0;n<34;n++){const x=p.x+(rand()-.5)*52,z=p.z+(rand()-.5)*46,h=4+rand()*9;const trunk=new T.Mesh(new T.CylinderGeometry(.25,.5,h*.35,6),matCrate);trunk.position.set(x,h*.175,z);scene.add(trunk);const crown=new T.Mesh(new T.ConeGeometry(2+rand()*2,h*.7,7),forestMat);crown.position.set(x,h*.68,z);crown.castShadow=true;scene.add(crown);}}
+    if(i===4){addBox(82,.25,7,p.x,0.3,p.z,matTrim,false);for(let n=0;n<5;n++)addBox(12,8,18,p.x-28+n*14,4,p.z-24,matWall,true);}
+    if(i===5){addBox(38,1,8,p.x,7,p.z,matBeam,false);addBox(32,9,12,p.x,4,p.z+18,matWall,true);}
+    const marker=new T.Mesh(new T.RingGeometry(13,13.7,48),new T.MeshBasicMaterial({color:p.color,side:T.DoubleSide}));marker.rotation.x=-Math.PI/2;marker.position.set(p.x,.38,p.z);scene.add(marker);
+  });
+  // Sculpted ridgelines make Ghost Valley and the island interior readable at a distance.
+  for(let n=0;n<22;n++){const x=-145+rand()*90,z=35+rand()*95,r=5+rand()*12,h=8+rand()*22;const hill=new T.Mesh(new T.ConeGeometry(r,h,7),forestMat);hill.position.set(x,h/2-1,z);hill.rotation.y=rand()*Math.PI;hill.receiveShadow=true;scene.add(hill);}
+  feature('quora-island-six-districts'); feature('coastal-water'); feature('island-road-network'); feature('ghost-valley-forest');
   feature('procedural-city');
 
-  for (let gx = -4; gx <= 4; gx++) {
-    for (let gz = -4; gz <= 4; gz++) {
+  for (let gx = -2; gx <= 2; gx++) {
+    for (let gz = -2; gz <= 2; gz++) {
       if (gx === 0 && gz === 0) continue;
       const cx = gx * 18;
       const cz = gz * 18;
@@ -190,6 +221,15 @@
       addBox(bw * 0.7, 0.4, bd * 0.7, cx, bh + 0.2, cz, matTrim, false);
     }
   }
+  // Crown City's skyline blockout, with walkable streets preserved between towers.
+  for(let gx=-1;gx<=1;gx++)for(let gz=-1;gz<=1;gz++){
+    if(gx===0&&gz===0)continue;
+    const x=gx*13,z=gz*13,h=12+rand()*18,w=6+rand()*2;
+    addBox(w,h,w,x,h/2,z,matWall,true);
+    for(let f=1;f<Math.floor(h/3);f++)addBox(w*.82,.55,.18,x,h-f*3,z+w/2+.11,matWin,false);
+    addBox(w*.72,.35,w*.72,x,h+.18,z,matTrim,false);
+  }
+  feature('crown-city-skyline');
   feature('emissive-windows');
 
   addBox(1.4, 0.7, 1.4, -4, 0.35, 2, matCrate, true);
