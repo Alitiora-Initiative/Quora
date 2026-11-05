@@ -30,8 +30,9 @@
   feature('shadow-map');
 
   const scene = new T.Scene();
-  scene.background = new T.Color(0x07060c);
-  scene.fog = new T.FogExp2(0x120a1c, 0.016);
+  const skyDay = new T.Color(0x84b8dc), skyNight = new T.Color(0x071020), skyDusk = new T.Color(0xd47769);
+  scene.background = skyDay.clone();
+  scene.fog = new T.FogExp2(0x9ab4c0, 0.0028);
   feature('exp-fog');
 
   const camera = new T.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.08, 380);
@@ -43,14 +44,16 @@
   mini.up.set(0, 0, -1);
   feature('pip-minimap');
 
-  scene.add(new T.HemisphereLight(0x8a78a8, 0x1a1020, 0.72));
-  const sun = new T.DirectionalLight(0xfff1dc, 1.25);
+  const hemi = new T.HemisphereLight(0xb9ddff, 0x30352c, 1.2); scene.add(hemi);
+  const sun = new T.DirectionalLight(0xffe5b4, 2.3);
   sun.position.set(36, 70, 18);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   const sc = sun.shadow.camera;
   sc.near = 2; sc.far = 180; sc.left = -70; sc.right = 70; sc.top = 70; sc.bottom = -70;
   scene.add(sun);
+  const sunDisk = new T.Mesh(new T.SphereGeometry(8,20,12),new T.MeshBasicMaterial({color:0xffe3a0}));scene.add(sunDisk);
+  const moonDisk = new T.Mesh(new T.SphereGeometry(5,16,10),new T.MeshBasicMaterial({color:0xc8d9ff}));scene.add(moonDisk);
 
   const state = {
     started: false, paused: false, alive: true,
@@ -61,6 +64,7 @@
     ads: 0, shake: 0, recoilP: 0, recoilY: 0, landDip: 0,
     sens: 0.0022, invert: 1, volume: 0.7, qualityHigh: true,
     time: 0, lastHurt: -20, kills: 0, streak: 0, score: 0, wave: 1,
+    dayClock: 0.34, wind: 0,
     weapon: 0, nextFire: 0, reload: 0, switchAt: 0, meleeCd: 0, grenadeCd: 0, shieldCd: 0,
     step: 0, zoneR: 999, zoneOn: false, uav: 0, between: 0, best: 0,
     flash: 0, hitPulse: 0, headPulse: false, hitAngle: 0, net: 'SOLO'
@@ -167,17 +171,18 @@
   const matCrate = new T.MeshStandardMaterial({ color: 0x6a5340, roughness: 0.85 });
   const matBeam = new T.MeshStandardMaterial({ color: 0xc46bff, emissive: 0x6a2ea0, emissiveIntensity: 0.4 });
 
-  const ground = new T.Mesh(new T.PlaneGeometry(420, 420), matGround);
+  const ground = new T.Mesh(new T.PlaneGeometry(4000, 4000, 96, 96), matGround);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
   const waterMat = new T.MeshStandardMaterial({ color: 0x101c32, roughness: 0.28, metalness: 0.35, emissive: 0x07101c });
-  const water = new T.Mesh(new T.PlaneGeometry(560, 560), waterMat);
+  const water = new T.Mesh(new T.PlaneGeometry(5000, 5000), waterMat);
   water.rotation.x = -Math.PI / 2; water.position.y = -0.45; scene.add(water);
-  const island = new T.Mesh(new T.CylinderGeometry(176, 188, 8, 64, 1), new T.MeshStandardMaterial({ color: 0x343044, roughness: 0.95 }));
+  const island = new T.Mesh(new T.CylinderGeometry(1980, 2050, 95, 96, 1), new T.MeshStandardMaterial({ color: 0x343044, roughness: 0.95 }));
   island.position.y = -4; island.receiveShadow = true; scene.add(island);
   const districtMat = new T.MeshStandardMaterial({ color: 0x282736, roughness: 0.95 });
   const forestMat = new T.MeshStandardMaterial({ color: 0x243a32, roughness: 1 });
+  const windFoliage=[];
   const roadMat = new T.MeshStandardMaterial({ color: 0x171923, roughness: 0.92 });
   function road(x1,z1,x2,z2,width){ const dx=x2-x1,dz=z2-z1,len=Math.hypot(dx,dz),m=new T.Mesh(new T.PlaneGeometry(width,len),roadMat);m.rotation.x=-Math.PI/2;m.rotation.z=-Math.atan2(dx,dz);m.position.set((x1+x2)/2,0.025,(z1+z2)/2);scene.add(m); }
   const pois=[
@@ -194,14 +199,15 @@
     const pad=new T.Mesh(new T.CylinderGeometry(i===0?43:30,i===0?46:32,0.5,32),districtMat);pad.position.set(p.x,0.12,p.z);scene.add(pad);
     const pole=new T.Mesh(new T.CylinderGeometry(.18,.3,13,8),new T.MeshStandardMaterial({color:p.color,emissive:p.color,emissiveIntensity:.45}));pole.position.set(p.x,6.7,p.z);scene.add(pole);
     const sign=new T.Mesh(new T.BoxGeometry(13,1.1,.3),new T.MeshStandardMaterial({color:p.color,emissive:p.color,emissiveIntensity:.5}));sign.position.set(p.x,10,p.z);scene.add(sign);
-    if(i===3){for(let n=0;n<34;n++){const x=p.x+(rand()-.5)*52,z=p.z+(rand()-.5)*46,h=4+rand()*9;const trunk=new T.Mesh(new T.CylinderGeometry(.25,.5,h*.35,6),matCrate);trunk.position.set(x,h*.175,z);scene.add(trunk);const crown=new T.Mesh(new T.ConeGeometry(2+rand()*2,h*.7,7),forestMat);crown.position.set(x,h*.68,z);crown.castShadow=true;scene.add(crown);}}
+    if(i===3){for(let n=0;n<150;n++){const x=p.x+(rand()-.5)*180,z=p.z+(rand()-.5)*170,h=5+rand()*13;const trunk=new T.Mesh(new T.CylinderGeometry(.25,.5,h*.35,6),matCrate);trunk.position.set(x,h*.175,z);scene.add(trunk);const crown=new T.Mesh(new T.ConeGeometry(2+rand()*2,h*.7,7),forestMat);crown.position.set(x,h*.68,z);crown.castShadow=true;scene.add(crown);windFoliage.push({mesh:crown,phase:rand()*6,amp:.025+rand()*.04});}}
     if(i===4){addBox(82,.25,7,p.x,0.3,p.z,matTrim,false);for(let n=0;n<5;n++)addBox(12,8,18,p.x-28+n*14,4,p.z-24,matWall,true);}
     if(i===5){addBox(38,1,8,p.x,7,p.z,matBeam,false);addBox(32,9,12,p.x,4,p.z+18,matWall,true);}
     const marker=new T.Mesh(new T.RingGeometry(13,13.7,48),new T.MeshBasicMaterial({color:p.color,side:T.DoubleSide}));marker.rotation.x=-Math.PI/2;marker.position.set(p.x,.38,p.z);scene.add(marker);
   });
   // Sculpted ridgelines make Ghost Valley and the island interior readable at a distance.
-  for(let n=0;n<22;n++){const x=-145+rand()*90,z=35+rand()*95,r=5+rand()*12,h=8+rand()*22;const hill=new T.Mesh(new T.ConeGeometry(r,h,7),forestMat);hill.position.set(x,h/2-1,z);hill.rotation.y=rand()*Math.PI;hill.receiveShadow=true;scene.add(hill);}
+  for(let n=0;n<210;n++){const x=-350+rand()*210,z=-20+rand()*340,r=9+rand()*32,h=18+rand()*90;const hill=new T.Mesh(new T.ConeGeometry(r,h,7),forestMat);hill.position.set(x,h/2-1,z);hill.rotation.y=rand()*Math.PI;hill.receiveShadow=true;scene.add(hill);}
   feature('quora-island-six-districts'); feature('coastal-water'); feature('island-road-network'); feature('ghost-valley-forest');
+  feature('16-square-kilometre-island'); feature('wind-driven-foliage'); feature('regional-ridge-terrain');
   feature('procedural-city');
 
   for (let gx = -2; gx <= 2; gx++) {
@@ -1241,6 +1247,29 @@
     renderer.setScissorTest(false);
   }
 
+  function updateWorld(dt) {
+    state.dayClock = (state.dayClock + dt / 420) % 1;
+    const angle = state.dayClock * Math.PI * 2 - Math.PI / 2;
+    const daylight = clamp(Math.sin(angle) * 1.5 + 0.15, 0.025, 1);
+    const twilight = clamp(1 - Math.abs(Math.sin(angle)) * 2.3, 0, 1);
+    const sunDir = new T.Vector3(Math.cos(angle), Math.sin(angle), 0.25).normalize();
+    sun.position.copy(sunDir).multiplyScalar(900).add(state.pos);
+    sun.target.position.copy(state.pos); sun.target.updateMatrixWorld();
+    sun.intensity = 0.12 + daylight * 2.2;
+    hemi.intensity = 0.18 + daylight * 1.02;
+    sun.color.copy(new T.Color(0x9abaff).lerp(new T.Color(0xffe3b7), daylight).lerp(new T.Color(0xff9273), twilight * 0.48));
+    sunDisk.position.copy(sunDir).multiplyScalar(1450).add(state.pos);
+    sunDisk.visible = sunDir.y > -0.08; sunDisk.material.color.copy(new T.Color(0xff9971).lerp(new T.Color(0xfff0bf), daylight));
+    moonDisk.position.copy(sunDir).multiplyScalar(-1380).add(state.pos); moonDisk.visible = sunDir.y < 0.12;
+    const sky = skyNight.clone().lerp(skyDay, daylight).lerp(skyDusk, twilight * 0.62);
+    scene.background.copy(sky); scene.fog.color.copy(sky).lerp(new T.Color(0x9aa7a0), daylight * 0.22);
+    scene.fog.density = 0.0015 + (1 - daylight) * 0.0018;
+    state.wind = Math.sin(state.time * 0.17) * 0.7 + Math.sin(state.time * 0.43) * 0.22;
+    for (const f of windFoliage) { f.mesh.rotation.z = Math.sin(state.time * 1.4 + f.phase) * f.amp * (1 + Math.abs(state.wind)); f.mesh.rotation.x = Math.cos(state.time * 1.1 + f.phase) * f.amp * 0.5; }
+    water.position.x = Math.sin(state.time * 0.08) * 1.4;
+  }
+  feature('dynamic-solar-day-night'); feature('sun-and-moon'); feature('twilight-sky-cycle'); feature('moving-weather-wind');
+
   function bootInput() {
     $('sens').value = String(state.sens);
     $('volume').value = String(state.volume);
@@ -1314,6 +1343,7 @@
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     state.time += dt;
+    updateWorld(dt);
     if (state.started && !state.paused) {
       updatePlayer(dt);
       if (state.alive) {
